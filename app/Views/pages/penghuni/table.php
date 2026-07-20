@@ -44,9 +44,20 @@ $no = 1;
                 <span class="table-cell-subtitle"><?= date('d M Y', strtotime($row['tanggal_pemesanan'])) ?></span>
             </td>
             <td>
-                <span class="table-badge table-badge-success">
-                    Aktif
-                </span>
+                <?php $status = $row['status_pemesanan'] ?? 'Menunggu';
+            if ($status == "Disetujui"): ?>
+                        <span class="table-badge table-badge-success">
+                            Aktif
+                        </span>
+                    <?php elseif ($status == "Berhenti_Sewa"): ?>
+                        <span class="table-badge table-badge-warning">
+                            Berhenti Sewa
+                        </span>
+                    <?php elseif ($status == "Ditolak"): ?>
+                        <span class="table-badge table-badge-danger">
+                            <?= esc($status) ?>
+                        </span>
+                    <?php endif; ?>
             </td>
             <td>
                 <div class="table-actions">
@@ -69,6 +80,12 @@ $no = 1;
                         data-message="Apakah Anda yakin ingin menghapus data penghuni ini? Tindakan ini tidak dapat dibatalkan!"
                         title="Hapus">
                             <i class="ti ti-trash"></i>
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($role == 'konsumen' && ($row['status_pemesanan'] ?? '') == 'Disetujui' && empty($row['sudah_pengajuan'])): ?>
+                        <a href="<?= base_url('dashboard/pengajuan-berhenti/store/'.$row['id_pemesanan']) ?>"
+                            class="btn-table btn-table-danger">
+                                <i class="ti ti-door-exit"></i>
                         </a>
                     <?php endif; ?>
                 </div>
