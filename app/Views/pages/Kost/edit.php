@@ -121,7 +121,7 @@ $role = session()->get('role');
                     Fasilitas Kost
                 </h2>
                 <p class="form-subtitle">Pilih fasilitas yang tersedia di kost ini</p>
-                <div class="check-group">
+                <div class="check-group" id="fasilitasList">
                     <?php $selectedFasilitas = array_column($kost['fasilitas'], 'id_fasilitas_kost');
 foreach ($fasilitas as $item): ?>
                             <label class="check-card">
@@ -137,6 +137,32 @@ foreach ($fasilitas as $item): ?>
                                         </label>
                                         <?php endforeach; ?>
                                     </div>
+                                    <button type="button" class="btn-inline-add" id="toggleFasilitasForm">
+                                        <i class="ti ti-plus"></i>
+                                        Tambah Fasilitas Baru
+                                    </button>
+                                    <div class="inline-form-wrapper" id="fasilitasFormWrapper" style="display:none;">
+                                        <div class="inline-form">
+                                            <div class="field-group">
+                                                <label>Nama Fasilitas</label>
+                                                <input type="text" id="namaFasilitas" placeholder="Contoh : Wi-Fi, AC, dll">
+                                            </div>
+                                            <div class="field-group">
+                                                <label>Deskripsi</label>
+                                                <input type="text" id="deskripsiFasilitas" placeholder="Deskripsi singkat fasilitas">
+                                            </div>
+                                            <div class="inline-form-actions">
+                                                <button type="button" class="btn-inline-save" id="simpanFasilitas">
+                                                    <i class="ti ti-check"></i>
+                                                    Simpan
+                                                </button>
+                                                <button type="button" class="btn-inline-cancel" id="batalFasilitas">
+                                                    <i class="ti ti-x"></i>
+                                                    Batal
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-card mt-4">
                                     <h2>
@@ -145,7 +171,7 @@ foreach ($fasilitas as $item): ?>
                                     </h2>
                                     <p class="form-subtitle">Pilih aturan yang berlaku di kost ini</p>
                                     <?php $selectedAturan = array_column($kost['aturan'], 'id_aturan'); ?>
-                <div class="check-group">
+                <div class="check-group" id="aturanList">
                     <?php foreach ($aturan as $item): ?>
                     <label class="check-card">
                         <input
@@ -159,6 +185,32 @@ foreach ($fasilitas as $item): ?>
                         </div>
                     </label>
                     <?php endforeach; ?>
+                </div>
+                <button type="button" class="btn-inline-add" id="toggleAturanForm">
+                    <i class="ti ti-plus"></i>
+                    Tambah Aturan Baru
+                </button>
+                <div class="inline-form-wrapper" id="aturanFormWrapper" style="display:none;">
+                    <div class="inline-form">
+                        <div class="field-group">
+                            <label>Nama Aturan</label>
+                            <input type="text" id="namaAturan" placeholder="Contoh : Dilarang merokok">
+                        </div>
+                        <div class="field-group">
+                            <label>Deskripsi Aturan</label>
+                            <input type="text" id="deskripsiAturan" placeholder="Deskripsi singkat aturan">
+                        </div>
+                        <div class="inline-form-actions">
+                            <button type="button" class="btn-inline-save" id="simpanAturan">
+                                <i class="ti ti-check"></i>
+                                Simpan
+                            </button>
+                            <button type="button" class="btn-inline-cancel" id="batalAturan">
+                                <i class="ti ti-x"></i>
+                                Batal
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-card mt-4">
@@ -298,6 +350,130 @@ inputFoto.addEventListener("change", function () {
         preview.style.display = "block";
     };
     reader.readAsDataURL(file);
+});
+
+document.getElementById('toggleFasilitasForm').addEventListener('click', function() {
+    var wrapper = document.getElementById('fasilitasFormWrapper');
+    wrapper.style.display = wrapper.style.display === 'none' ? 'block' : 'none';
+});
+
+document.getElementById('batalFasilitas').addEventListener('click', function() {
+    document.getElementById('fasilitasFormWrapper').style.display = 'none';
+    document.getElementById('namaFasilitas').value = '';
+    document.getElementById('deskripsiFasilitas').value = '';
+});
+
+document.getElementById('simpanFasilitas').addEventListener('click', function() {
+    var nama = document.getElementById('namaFasilitas').value.trim();
+    var deskripsi = document.getElementById('deskripsiFasilitas').value.trim();
+
+    if (!nama || !deskripsi) {
+        alert('Nama dan deskripsi fasilitas wajib diisi.');
+        return;
+    }
+
+    var btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Menyimpan...';
+
+    var csrfName = '<?= csrf_token() ?>';
+    var csrfInput = document.querySelector('input[name="<?= csrf_token() ?>"]');
+    var formData = new FormData();
+    formData.append('nama_fasilitas', nama);
+    formData.append('deskripsi', deskripsi);
+    formData.append(csrfName, csrfInput.value);
+
+    fetch('<?= base_url('dashboard/kost/ajax-tambah-fasilitas') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(result) {
+        if (result.success) {
+            if (result.csrf_hash) {
+                csrfInput.value = result.csrf_hash;
+            }
+            var label = document.createElement('label');
+            label.className = 'check-card';
+            label.innerHTML = '<input type="checkbox" name="id_fasilitas[]" value="' + result.data.id_fasilitas_kost + '" checked><div><strong>' + result.data.nama_fasilitas + '</strong><small>' + result.data.deskripsi + '</small></div>';
+            document.getElementById('fasilitasList').appendChild(label);
+
+            document.getElementById('fasilitasFormWrapper').style.display = 'none';
+            document.getElementById('namaFasilitas').value = '';
+            document.getElementById('deskripsiFasilitas').value = '';
+        } else {
+            alert(result.message);
+        }
+    })
+    .catch(function() {
+        alert('Terjadi kesalahan saat menyimpan data.');
+    })
+    .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-check"></i> Simpan';
+    });
+});
+
+document.getElementById('toggleAturanForm').addEventListener('click', function() {
+    var wrapper = document.getElementById('aturanFormWrapper');
+    wrapper.style.display = wrapper.style.display === 'none' ? 'block' : 'none';
+});
+
+document.getElementById('batalAturan').addEventListener('click', function() {
+    document.getElementById('aturanFormWrapper').style.display = 'none';
+    document.getElementById('namaAturan').value = '';
+    document.getElementById('deskripsiAturan').value = '';
+});
+
+document.getElementById('simpanAturan').addEventListener('click', function() {
+    var nama = document.getElementById('namaAturan').value.trim();
+    var deskripsi = document.getElementById('deskripsiAturan').value.trim();
+
+    if (!nama || !deskripsi) {
+        alert('Nama dan deskripsi aturan wajib diisi.');
+        return;
+    }
+
+    var btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ti ti-loader"></i> Menyimpan...';
+
+    var csrfName = '<?= csrf_token() ?>';
+    var csrfInput = document.querySelector('input[name="<?= csrf_token() ?>"]');
+    var formData = new FormData();
+    formData.append('nama_aturan', nama);
+    formData.append('deskripsi_aturan', deskripsi);
+    formData.append(csrfName, csrfInput.value);
+
+    fetch('<?= base_url('dashboard/kost/ajax-tambah-aturan') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) { return response.json(); })
+    .then(function(result) {
+        if (result.success) {
+            if (result.csrf_hash) {
+                csrfInput.value = result.csrf_hash;
+            }
+            var label = document.createElement('label');
+            label.className = 'check-card';
+            label.innerHTML = '<input type="checkbox" name="id_aturan[]" value="' + result.data.id_aturan + '" checked><div><strong>' + result.data.nama_aturan + '</strong><small>' + result.data.deskripsi_aturan + '</small></div>';
+            document.getElementById('aturanList').appendChild(label);
+
+            document.getElementById('aturanFormWrapper').style.display = 'none';
+            document.getElementById('namaAturan').value = '';
+            document.getElementById('deskripsiAturan').value = '';
+        } else {
+            alert(result.message);
+        }
+    })
+    .catch(function() {
+        alert('Terjadi kesalahan saat menyimpan data.');
+    })
+    .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-check"></i> Simpan';
+    });
 });
 </script>
 <?= $this->endSection() ?>

@@ -18,6 +18,8 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
     $routes->get('penghuni', 'PenghuniController::index');
     $routes->get('pengajuan-berhenti', 'BerhentiSewaController::index');
     $routes->get('pengguna', 'PenggunaController::index');
+    $routes->get('fasilitas-kost', 'FasilitasKostController::index');
+    $routes->get('aturan-kost', 'AturanKostController::index');
     $routes->get('laporan-keuangan', 'LaporanKeuanganController::index');
     $routes->get('laporan-penyewa', 'LaporanPenyewaController::index');
 
@@ -28,6 +30,8 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
     $routes->get('penghuni/table', 'PenghuniController::table');
     $routes->get('pengajuan-berhenti/table', 'BerhentiSewaController::table');
     $routes->get('pengguna/table', 'PenggunaController::table');
+    $routes->get('fasilitas-kost/table', 'FasilitasKostController::table');
+    $routes->get('aturan-kost/table', 'AturanKostController::table');
     $routes->get('laporan-keuangan/table', 'LaporanKeuanganController::table');
     $routes->get('laporan-penyewa/table', 'LaporanPenyewaController::table');
 
@@ -39,6 +43,8 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
     $routes->get('pengguna/hapus/(:num)', 'PenggunaController::hapus/$1');
     $routes->get('pengguna/toggle-status/(:num)', 'PenggunaController::toggleStatus/$1');
 
+    $routes->post('kost/ajax-tambah-fasilitas', 'KostController::ajaxTambahFasilitas');
+    $routes->post('kost/ajax-tambah-aturan', 'KostController::ajaxTambahAturan');
     $routes->post('kost/store', 'KostController::Store');
     $routes->get('kost/detail/(:num)', 'KostController::detail/$1');
     $routes->get('kost/edit/(:num)', 'KostController::edit/$1');
@@ -52,6 +58,8 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
     $routes->get('kamar/(:num)/edit/(:num)', 'KamarController::edit/$1/$2');
     $routes->post('kamar/(:num)/update/(:num)', 'KamarController::update/$1/$2');
     $routes->get('kamar/(:num)/delete/(:num)', 'KamarController::delete/$1/$2');
+    $routes->post('kamar/ajax-tambah-tipe-kamar', 'KamarController::ajaxTambahTipeKamar');
+    $routes->post('kamar/ajax-tambah-fasilitas-kamar', 'KamarController::ajaxTambahFasilitasKamar');
     $routes->get('kamar/(:num)/pesan/(:num)', 'KamarController::pesan/$1/$2');
 
 

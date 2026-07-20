@@ -8,17 +8,21 @@ use App\Models\PemilikKostModel;
 use App\Models\FasilitasKostModel;
 use App\Models\AturanKostModel;
 
+use App\Models\GaleriKostModel;
+
 class KostController extends BaseController
 {
     protected $kost;
     protected $fasilitas_kost;
     protected $aturan_kost;
+    protected $galeri_kost;
 
     public function __construct()
     {
         $this->kost = new KostModel();
         $this->fasilitas_kost = new FasilitasKostModel();
         $this->aturan_kost = new AturanKostModel();
+        $this->galeri_kost = new GaleriKostModel();
     }
 
     public function index()
@@ -82,10 +86,6 @@ class KostController extends BaseController
             'total_kamar' => 'required|integer|greater_than[0]',
             'id_fasilitas' => 'required',
             'id_aturan'   => 'required',
-            'foto_kost'   => [
-                'rules' =>
-                'permit_empty|is_image[foto_kost]|mime_in[foto_kost,image/jpg,image/jpeg,image/png]|max_size[foto_kost,2048]'
-            ]
         ];
         if (!$this->validate($rules)) {
             FlashMessageHelper::setError('Validasi gagal. Mohon periksa input.');
@@ -95,15 +95,28 @@ class KostController extends BaseController
         }
         $db = \Config\Database::connect();
         $db->transBegin();
+        $uploadedFiles = [];
         try {
             $namaFoto = "default.png";
-            $file = $this->request->getFile('foto_kost');
-            if ($file && $file->isValid() && !$file->hasMoved()) {
-                $namaFoto = $file->getRandomName();
-                $file->move(
-                    FCPATH . 'uploads/kost/',
-                    $namaFoto
-                );
+            $files = $this->request->getFileMultiple('foto_kost');
+            if (!empty($files)) {
+                foreach ($files as $index => $file) {
+                    if ($file->isValid() && !$file->hasMoved()) {
+                        $ext = $file->getExtension();
+                        if (!in_array(strtolower($ext), ['jpg', 'jpeg', 'png'])) {
+                            continue;
+                        }
+                        if ($file->getSize() > 2 * 1024 * 1024) {
+                            continue;
+                        }
+                        $randomName = $file->getRandomName();
+                        $file->move(FCPATH . 'uploads/kost/', $randomName);
+                        $uploadedFiles[] = $randomName;
+                        if ($index === 0) {
+                            $namaFoto = $randomName;
+                        }
+                    }
+                }
             }
             $userId = session()->get('user_id');
             $pemilik = (new PemilikKostModel())
@@ -112,8 +125,7 @@ class KostController extends BaseController
             if (!$pemilik) {
                 throw new \Exception("Data pemilik tidak ditemukan.");
             }
-            $this->kost->insert([
-
+            $insertData = [
                 'id_pemilik'   => $pemilik['id_pemilik'],
                 'nama_kost'    => $this->request->getPost('nama_kost'),
                 'alamat_kost'  => $this->request->getPost('alamat_kost'),
@@ -123,9 +135,28 @@ class KostController extends BaseController
                 'type_kost'    => $this->request->getPost('type_kost'),
                 'total_kamar'  => $this->request->getPost('total_kamar'),
                 'foto_kost'    => $namaFoto
+            ];
 
-            ]);
+            $insertResult = $this->kost->insert($insertData);
+            if (!$insertResult) {
+                $modelErrors = $this->kost->errors();
+                throw new \Exception("Gagal insert kost: " . implode(', ', $modelErrors));
+            }
+
             $idKost = $this->kost->getInsertID();
+
+            if (!empty($uploadedFiles)) {
+                $urutan = 0;
+                foreach ($uploadedFiles as $randomName) {
+                    $this->galeri_kost->insert([
+                        'id_kost'   => $idKost,
+                        'nama_file' => $randomName,
+                        'urutan'    => $urutan
+                    ]);
+                    $urutan++;
+                }
+            }
+
             $fasilitas = $this->request->getPost('id_fasilitas');
             if (!empty($fasilitas)) {
                 foreach ($fasilitas as $idFasilitas) {
@@ -149,8 +180,10 @@ class KostController extends BaseController
             return redirect()->to(base_url('dashboard/kost'));
         } catch (\Throwable $e) {
             $db->transRollback();
-            if ($namaFoto != "default.png") {
-                @unlink(FCPATH . 'uploads/kost/' . $namaFoto);
+            if (!empty($uploadedFiles)) {
+                foreach ($uploadedFiles as $file) {
+                    @unlink(FCPATH . 'uploads/kost/' . $file);
+                }
             }
             FlashMessageHelper::setError($e->getMessage());
             return redirect()->back()->withInput();
@@ -283,6 +316,94 @@ class KostController extends BaseController
             );
             return redirect()->back()->withInput();
         }
+    }
+
+    public function ajaxTambahFasilitas()
+    {
+        $nama = $this->request->getPost('nama_fasilitas');
+        $deskripsi = $this->request->getPost('deskripsi');
+
+        if (empty($nama) || empty($deskripsi)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Nama dan deskripsi fasilitas wajib diisi.'
+            ]);
+        }
+
+        $existing = $this->fasilitas_kost->where('nama_fasilitas', $nama)->first();
+        if ($existing) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Fasilitas dengan nama tersebut sudah ada.'
+            ]);
+        }
+
+        $id = $this->fasilitas_kost->insert([
+            'nama_fasilitas' => $nama,
+            'deskripsi'      => $deskripsi
+        ]);
+
+        if ($id) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Fasilitas berhasil ditambahkan.',
+                'csrf_hash' => csrf_hash(),
+                'data' => [
+                    'id_fasilitas_kost' => $id,
+                    'nama_fasilitas'    => $nama,
+                    'deskripsi'         => $deskripsi
+                ]
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Gagal menambahkan fasilitas.'
+        ]);
+    }
+
+    public function ajaxTambahAturan()
+    {
+        $nama = $this->request->getPost('nama_aturan');
+        $deskripsi = $this->request->getPost('deskripsi_aturan');
+
+        if (empty($nama) || empty($deskripsi)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Nama dan deskripsi aturan wajib diisi.'
+            ]);
+        }
+
+        $existing = $this->aturan_kost->where('nama_aturan', $nama)->first();
+        if ($existing) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Aturan dengan nama tersebut sudah ada.'
+            ]);
+        }
+
+        $id = $this->aturan_kost->insert([
+            'nama_aturan'      => $nama,
+            'deskripsi_aturan' => $deskripsi
+        ]);
+
+        if ($id) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Aturan berhasil ditambahkan.',
+                'csrf_hash' => csrf_hash(),
+                'data' => [
+                    'id_aturan'      => $id,
+                    'nama_aturan'    => $nama,
+                    'deskripsi_aturan' => $deskripsi
+                ]
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Gagal menambahkan aturan.'
+        ]);
     }
 
     public function Delete($id)

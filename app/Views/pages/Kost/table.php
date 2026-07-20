@@ -15,7 +15,7 @@ $role = session()->get('role');
     </thead>
     <tbody>
         <?php if (!empty($data_kost)): ?>
-        <?php $no = 1 + ($pager->getCurrentPage() - 1) * $pager->getPerPage();
+        <?php $no = !empty($pager) ? 1 + ($pager->getCurrentPage() - 1) * $pager->getPerPage() : 1;
             foreach ($data_kost as $kost): ?>
             <tr>
                 <td>
@@ -95,7 +95,9 @@ $role = session()->get('role');
 </table>
 <div class="table-footer">
     <?= $this->include('Pager/showing')?>
+    <?php if (!empty($pager)): ?>
     <?= $pager->links('default', 'custom_pagination') ?>
+    <?php endif; ?>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

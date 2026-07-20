@@ -14,4 +14,20 @@ class FasilitasKostModel extends Model
         'nama_fasilitas',
         'deskripsi'
     ];
+
+    public function getFasilitas($keyword = null, $perPage = 10)
+    {
+        $builder = $this->builder();
+
+        if (!empty($keyword)) {
+            $builder->groupStart()
+                    ->like('nama_fasilitas', $keyword)
+                    ->orLike('deskripsi', $keyword)
+                    ->groupEnd();
+        }
+
+        $builder->orderBy('id_fasilitas_kost', 'DESC');
+
+        return $builder->paginate($perPage);
+    }
 }

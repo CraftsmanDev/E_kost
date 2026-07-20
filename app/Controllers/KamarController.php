@@ -245,6 +245,94 @@ class KamarController extends BaseController
         }
     }
 
+    public function ajaxTambahTipeKamar()
+    {
+        $nama = $this->request->getPost('nama_tipe_kamar');
+        $deskripsi = $this->request->getPost('deskripsi_type');
+
+        if (empty($nama) || empty($deskripsi)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Nama dan deskripsi tipe kamar wajib diisi.'
+            ]);
+        }
+
+        $existing = $this->tipe_kamar->where('nama_tipe_kamar', $nama)->first();
+        if ($existing) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Tipe kamar dengan nama tersebut sudah ada.'
+            ]);
+        }
+
+        $id = $this->tipe_kamar->insert([
+            'nama_tipe_kamar' => $nama,
+            'deskripsi_type'  => $deskripsi
+        ]);
+
+        if ($id) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Tipe kamar berhasil ditambahkan.',
+                'csrf_hash' => csrf_hash(),
+                'data' => [
+                    'id_tipe_kamar'   => $id,
+                    'nama_tipe_kamar' => $nama,
+                    'deskripsi_type'  => $deskripsi
+                ]
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Gagal menambahkan tipe kamar.'
+        ]);
+    }
+
+    public function ajaxTambahFasilitasKamar()
+    {
+        $nama = $this->request->getPost('nama_fasilitas');
+        $deskripsi = $this->request->getPost('deskripsi');
+
+        if (empty($nama) || empty($deskripsi)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Nama dan deskripsi fasilitas kamar wajib diisi.'
+            ]);
+        }
+
+        $existing = $this->fasilitas_kamar->where('nama_fasilitas', $nama)->first();
+        if ($existing) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Fasilitas kamar dengan nama tersebut sudah ada.'
+            ]);
+        }
+
+        $id = $this->fasilitas_kamar->insert([
+            'nama_fasilitas' => $nama,
+            'deskripsi'      => $deskripsi
+        ]);
+
+        if ($id) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Fasilitas kamar berhasil ditambahkan.',
+                'csrf_hash' => csrf_hash(),
+                'data' => [
+                    'id_fasilitas_kamar' => $id,
+                    'nama_fasilitas'     => $nama,
+                    'deskripsi'          => $deskripsi
+                ]
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Gagal menambahkan fasilitas kamar.'
+        ]);
+    }
+
     public function pesan($id_kost, $id_kamar)
     {
         $kamar = $this->kamar->find($id_kamar);
