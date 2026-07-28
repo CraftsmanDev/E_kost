@@ -215,9 +215,14 @@ class KostController extends BaseController
             FlashMessageHelper::setFlashMessage('error', 'Data kost tidak ditemukan.');
             return redirect()->to('dashboard/kost');
         }
+        $kost = $this->kost->getDetailKost($id);
+        $kost['galeri'] = $this->galeri_kost
+            ->where('id_kost', $id)
+            ->orderBy('urutan', 'ASC')
+            ->findAll();
         $data = [
             'title' => 'Edit Kost',
-            'kost'  => $this->kost->getDetailKost($id),
+            'kost'  => $kost,
             'fasilitas' => $this->fasilitas_kost->findAll(),
             'aturan' => $this->aturan_kost->findAll(),
         ];
@@ -254,6 +259,7 @@ class KostController extends BaseController
         }
         $db = \Config\Database::connect();
         $db->transBegin();
+        $uploadedFiles = [];
         try {
             $data = [
                 'nama_kost'   => $this->request->getPost('nama_kost'),
@@ -264,24 +270,74 @@ class KostController extends BaseController
                 'type_kost'   => $this->request->getPost('type_kost'),
                 'total_kamar' => $this->request->getPost('total_kamar')
             ];
-            $file = $this->request->getFile('foto_kost');
-            if ($file && $file->isValid() && !$file->hasMoved()) {
-                $namaFoto = $file->getRandomName();
-                $file->move(
-                    FCPATH.'uploads/kost/',
-                    $namaFoto
-                );
-                $data['foto_kost'] = $namaFoto;
-                if (
-                    $kost['foto_kost'] != '' &&
-                    $kost['foto_kost'] != 'default-kost.jpg' &&
-                    file_exists(FCPATH.'uploads/kost/'.$kost['foto_kost'])
-                ) {
-                    unlink(
-                        FCPATH.'uploads/kost/'.$kost['foto_kost']
-                    );
+
+            // Handle deleted photos
+            $hapusFoto = $this->request->getPost('hapus_foto');
+            if (!empty($hapusFoto)) {
+                foreach ($hapusFoto as $namaFile) {
+                    $path = FCPATH . 'uploads/kost/' . $namaFile;
+                    if ($namaFile != '' && $namaFile != 'default-kost.jpg' && file_exists($path)) {
+                        @unlink($path);
+                    }
+                    $this->galeri_kost
+                        ->where('id_kost', $id)
+                        ->where('nama_file', $namaFile)
+                        ->delete();
                 }
             }
+
+            // Handle new photos
+            $files = $this->request->getFileMultiple('foto_kost');
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    if ($file->isValid() && !$file->hasMoved()) {
+                        $ext = $file->getExtension();
+                        if (!in_array(strtolower($ext), ['jpg', 'jpeg', 'png'])) {
+                            continue;
+                        }
+                        if ($file->getSize() > 2 * 1024 * 1024) {
+                            continue;
+                        }
+                        $randomName = $file->getRandomName();
+                        $file->move(FCPATH . 'uploads/kost/', $randomName);
+                        $uploadedFiles[] = $randomName;
+                    }
+                }
+            }
+
+            // Get remaining gallery and insert new photos
+            $remainingGaleri = $this->galeri_kost
+                ->where('id_kost', $id)
+                ->orderBy('urutan', 'ASC')
+                ->findAll();
+
+            $nextUrutan = count($remainingGaleri);
+            if (!empty($uploadedFiles)) {
+                foreach ($uploadedFiles as $namaFile) {
+                    $this->galeri_kost->insert([
+                        'id_kost'   => $id,
+                        'nama_file' => $namaFile,
+                        'urutan'    => $nextUrutan
+                    ]);
+                    $nextUrutan++;
+                }
+            }
+
+            // Re-fetch all gallery and re-number urutan, set main foto
+            $allGaleri = $this->galeri_kost
+                ->where('id_kost', $id)
+                ->orderBy('urutan', 'ASC')
+                ->findAll();
+
+            if (!empty($allGaleri)) {
+                foreach ($allGaleri as $i => $gal) {
+                    $this->galeri_kost->update($gal['id_foto'], ['urutan' => $i]);
+                }
+                $data['foto_kost'] = $allGaleri[0]['nama_file'];
+            } else {
+                $data['foto_kost'] = 'default-kost.jpg';
+            }
+
             $this->kost->update($id, $data);
             $db->table('detail_fasilitas_kost')
                 ->where('id_kost', $id)
@@ -317,6 +373,11 @@ class KostController extends BaseController
             return redirect()->to('dashboard/kost');
         } catch (\Throwable $e) {
             $db->transRollback();
+            if (!empty($uploadedFiles)) {
+                foreach ($uploadedFiles as $file) {
+                    @unlink(FCPATH . 'uploads/kost/' . $file);
+                }
+            }
             FlashMessageHelper::setFlashMessage(
                 'error',
                 $e->getMessage()

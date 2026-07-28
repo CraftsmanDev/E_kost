@@ -218,23 +218,38 @@ foreach ($fasilitas as $item): ?>
                     <i class="ti ti-photo"></i>
                     Foto Kost
                 </h2>
-                <div class="upload-box">
+                <p class="form-subtitle">Upload hingga 10 foto. Foto pertama akan menjadi foto utama.</p>
+                <div class="upload-box-multi">
                     <input
                         type="file"
                         id="foto"
-                        name="foto_kost"
-                        accept="image/*">
+                        name="foto_kost[]"
+                        accept="image/jpg,image/jpeg,image/png"
+                        multiple>
                     <label for="foto">
                         <i class="ti ti-cloud-upload"></i>
                         <h3>
                             Upload Foto Kost
                         </h3>
                         <p>
-                            JPG / PNG (Maksimal 2 MB)
+                            JPG / PNG (Maksimal 2 MB per foto)
                         </p>
-                        <img id="preview" src="<?= base_url('uploads/kost/' . $kost['foto_kost']) ?>">
                     </label>
                 </div>
+                <div class="foto-grid" id="fotoGrid">
+                    <?php if (!empty($kost['galeri'])): ?>
+                        <?php foreach ($kost['galeri'] as $index => $foto): ?>
+                        <div class="foto-card foto-card-existing <?= $index === 0 ? 'foto-utama' : '' ?>" data-file="<?= esc($foto['nama_file']) ?>">
+                            <img src="<?= base_url('uploads/kost/' . $foto['nama_file']) ?>" alt="Foto Kost">
+                            <span class="foto-badge"><?= $index === 0 ? 'Utama' : '#' . ($index + 1) ?></span>
+                            <button type="button" class="foto-delete" title="Hapus foto">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <div id="hapusFotoContainer"></div>
             </div>
             <div class="form-card mt-4">
                 <h2>
@@ -247,7 +262,10 @@ foreach ($fasilitas as $item): ?>
                             Perubahan data kost tidak akan mempengaruhi data kamar.
                         </li>
                         <li>
-                            Foto baru akan menggantikan foto lama jika diupload.
+                            Upload beberapa foto sekaligus. Foto pertama akan menjadi foto utama.
+                        </li>
+                        <li>
+                            Klik ikon <i class="ti ti-trash"></i> pada foto untuk menghapusnya.
                         </li>
                         <li>
                             Pengelolaan kamar dilakukan melalui tombol "Kelola Kamar" pada halaman detail kost.
@@ -321,35 +339,88 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     setTimeout(() => map.invalidateSize(), 300);
 });
+// ── Multi Foto Upload ──
 const inputFoto = document.getElementById("foto");
-const preview   = document.getElementById("preview");
+const fotoGrid  = document.getElementById("fotoGrid");
+const hapusContainer = document.getElementById("hapusFotoContainer");
 
 inputFoto.addEventListener("change", function () {
-    const file = this.files[0];
-
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-        alert("Ukuran file maksimal 2 MB!");
+    const files = Array.from(this.files);
+    if (files.length > 10) {
+        alert("Maksimal 10 foto!");
         this.value = "";
-        preview.src = "";
-        preview.style.display = "none";
-        return;
-    }
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-    if (!allowedTypes.includes(file.type)) {
-        alert("Format file harus JPG atau PNG!");
-        this.value = "";
-        preview.src = "";
-        preview.style.display = "none";
         return;
     }
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        preview.src = e.target.result;
-        preview.style.display = "block";
-    };
-    reader.readAsDataURL(file);
+    // Remove previous new-file previews
+    document.querySelectorAll(".foto-card-new").forEach(function (el) { el.remove(); });
+
+    const existingCount = document.querySelectorAll(".foto-card-existing").length;
+    if (existingCount + files.length > 10) {
+        alert("Total foto tidak boleh lebih dari 10!");
+        this.value = "";
+        return;
+    }
+
+    files.forEach(function (file) {
+        if (file.size > 2 * 1024 * 1024) {
+            alert(file.name + " melebihi 2 MB, dilewati.");
+            return;
+        }
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (!allowedTypes.includes(file.type)) {
+            alert(file.name + " bukan format JPG/PNG, dilewati.");
+            return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "foto-card foto-card-new";
+
+        const img = document.createElement("img");
+        const reader = new FileReader();
+        reader.onload = function (e) { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+
+        const badge = document.createElement("span");
+        badge.className = "foto-badge";
+        badge.textContent = "Baru";
+
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "foto-delete";
+        delBtn.innerHTML = '<i class="ti ti-trash"></i>';
+        delBtn.addEventListener("click", function () { card.remove(); });
+
+        card.appendChild(img);
+        card.appendChild(badge);
+        card.appendChild(delBtn);
+        fotoGrid.appendChild(card);
+    });
+});
+
+// Handle delete for existing & new photos
+fotoGrid.addEventListener("click", function (e) {
+    const delBtn = e.target.closest(".foto-delete");
+    if (!delBtn) return;
+
+    const card = delBtn.closest(".foto-card");
+    if (card.classList.contains("foto-card-existing")) {
+        const file = card.dataset.file;
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "hapus_foto[]";
+        input.value = file;
+        hapusContainer.appendChild(input);
+    }
+    card.remove();
+
+    // Re-number badges
+    const cards = fotoGrid.querySelectorAll(".foto-card-existing");
+    cards.forEach(function (c, i) {
+        const badge = c.querySelector(".foto-badge");
+        if (badge) badge.textContent = i === 0 ? "Utama" : "#" + (i + 1);
+        c.classList.toggle("foto-utama", i === 0);
+    });
 });
 
 document.getElementById('toggleFasilitasForm').addEventListener('click', function() {
