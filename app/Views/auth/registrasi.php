@@ -112,6 +112,10 @@
                     Sudah punya akun?
                     <a href="<?= base_url('login') ?>">Login</a>
                 </p>
+                <div class="auth-notice">
+                    <i class="ti ti-info-circle"></i>
+                    <span>Setelah registrasi, harap tunggu akun Anda diverifikasi oleh admin. Jika dalam <strong>24 jam</strong> belum diverifikasi, silakan hubungi admin.</span>
+                </div>
             </div>
         </div>
     </div>

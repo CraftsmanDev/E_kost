@@ -57,7 +57,7 @@ class PemesananModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kost.total_kamar,
                 users.nama,
                 users.no_hp,
@@ -73,6 +73,7 @@ class PemesananModel extends Model
             ->join('users', 'users.id_user = konsumen.id_user', 'left')
             ->join('kamar', 'kamar.id_kamar = pemesanan.id_kamar', 'left')
             ->join('kost', 'kost.id_kost = kamar.id_kost', 'left')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('tipe_kamar', 'tipe_kamar.id_tipe_kamar = kamar.id_tipe_kamar', 'left')
             ->join('fasilitas_kamar', 'fasilitas_kamar.id_fasilitas_kamar = kamar.id_fasilitas_kamar', 'left')
             ->join('detail_fasilitas_kost', 'detail_fasilitas_kost.id_kost = kost.id_kost', 'left')

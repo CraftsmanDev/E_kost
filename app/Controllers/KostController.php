@@ -97,7 +97,7 @@ class KostController extends BaseController
         $db->transBegin();
         $uploadedFiles = [];
         try {
-            $namaFoto = "default.png";
+            $namaFoto = "default-kost.jpg";
             $files = $this->request->getFileMultiple('foto_kost');
             if (!empty($files)) {
                 foreach ($files as $index => $file) {
@@ -194,9 +194,16 @@ class KostController extends BaseController
     {
         $kostModel = new KostModel();
 
+        $kost = $kostModel->getDetailKost($id);
+
+        $kost['galeri'] = $this->galeri_kost
+            ->where('id_kost', $id)
+            ->orderBy('urutan', 'ASC')
+            ->findAll();
+
         $data = [
             'title' => 'Detail Kost',
-            'kost'  => $kostModel->getDetailKost($id)
+            'kost'  => $kost
         ];
 
         return view('pages/kost/detail', $data);
@@ -267,7 +274,7 @@ class KostController extends BaseController
                 $data['foto_kost'] = $namaFoto;
                 if (
                     $kost['foto_kost'] != '' &&
-                    $kost['foto_kost'] != 'default.png' &&
+                    $kost['foto_kost'] != 'default-kost.jpg' &&
                     file_exists(FCPATH.'uploads/kost/'.$kost['foto_kost'])
                 ) {
                     unlink(

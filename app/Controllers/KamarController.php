@@ -29,7 +29,7 @@ class KamarController extends BaseController
 
     public function index($id_kost)
     {
-        $kost = $this->kost->find($id_kost);
+        $kost = $this->kost->getKostById($id_kost);
 
         if (!$kost) {
             FlashMessageHelper::setFlashMessage('error', 'Data kost tidak ditemukan.');
@@ -74,7 +74,7 @@ class KamarController extends BaseController
 
     public function create($id_kost)
     {
-        $kost = $this->kost->find($id_kost);
+        $kost = $this->kost->getKostById($id_kost);
 
         if (!$kost) {
             FlashMessageHelper::setFlashMessage('error', 'Data kost tidak ditemukan.');
@@ -149,7 +149,7 @@ class KamarController extends BaseController
 
     public function edit($id_kost, $id_kamar)
     {
-        $kost = $this->kost->find($id_kost);
+        $kost = $this->kost->getKostById($id_kost);
         $kamar = $this->kamar->find($id_kamar);
 
         if (!$kost || !$kamar) {

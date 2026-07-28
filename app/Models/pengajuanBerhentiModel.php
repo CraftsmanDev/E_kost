@@ -38,13 +38,14 @@ class PengajuanBerhentiModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kamar.nomor_kamar,
                 kamar.harga_sewa
             ")
             ->join('konsumen', 'konsumen.id_konsumen = pengajuan_berhenti_sewa.id_konsumen')
             ->join('users', 'users.id_user = konsumen.id_user')
             ->join('kost', 'kost.id_kost = pengajuan_berhenti_sewa.id_kost')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('kamar', 'kamar.id_kamar = pengajuan_berhenti_sewa.id_kamar', 'left');
 
         if (!empty($keyword)) {
@@ -72,13 +73,14 @@ class PengajuanBerhentiModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kamar.nomor_kamar,
                 kamar.harga_sewa
             ")
             ->join('konsumen', 'konsumen.id_konsumen = pengajuan_berhenti_sewa.id_konsumen')
             ->join('users', 'users.id_user = konsumen.id_user')
             ->join('kost', 'kost.id_kost = pengajuan_berhenti_sewa.id_kost')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('kamar', 'kamar.id_kamar = pengajuan_berhenti_sewa.id_kamar', 'left')
             ->where('pengajuan_berhenti_sewa.id_pengajuan', $id)
             ->first();
@@ -95,13 +97,14 @@ class PengajuanBerhentiModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kamar.nomor_kamar,
                 kamar.harga_sewa
             ")
             ->join('konsumen', 'konsumen.id_konsumen = pengajuan_berhenti_sewa.id_konsumen')
             ->join('users', 'users.id_user = konsumen.id_user')
             ->join('kost', 'kost.id_kost = pengajuan_berhenti_sewa.id_kost')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('kamar', 'kamar.id_kamar = pengajuan_berhenti_sewa.id_kamar', 'left')
             ->where('pengajuan_berhenti_sewa.id_konsumen', $idKonsumen);
 
@@ -130,13 +133,14 @@ class PengajuanBerhentiModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa
         ")
             ->join('konsumen', 'konsumen.id_konsumen = pengajuan_berhenti_sewa.id_konsumen')
             ->join('users', 'users.id_user = konsumen.id_user')
             ->join('kost', 'kost.id_kost = pengajuan_berhenti_sewa.id_kost')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('kamar', 'kamar.id_kamar = pengajuan_berhenti_sewa.id_kamar', 'left')
 
             // Filter langsung berdasarkan pemilik kost

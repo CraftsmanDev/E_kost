@@ -159,7 +159,7 @@
                     </h2>
                     <p class="form-subtitle">Kost tempat kamar ini berada</p>
                     <div class="kost-preview">
-                        <img src="<?= base_url('uploads/kost/' . $kost['foto_kost']) ?>" alt="kost" class="kost-thumb">
+                        <img src="<?= base_url('uploads/kost/' . ($kost['foto_utama'] ?? 'default-kost.jpg')) ?>" alt="kost" class="kost-thumb">
                         <div class="kost-details">
                             <h3><?= esc($kost['nama_kost']) ?></h3>
                             <p>

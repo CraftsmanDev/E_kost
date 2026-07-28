@@ -12,7 +12,7 @@
     </div>
     
     <div class="detail-header">
-        <img src="<?= base_url('uploads/kost/'.$pengajuan['foto_kost']) ?>" class="detail-photo">
+        <img src="<?= base_url('uploads/kost/'.($pengajuan['foto_utama'] ?? 'default-kost.jpg')) ?>" class="detail-photo">
         <div class="detail-info">
             <h1><?= esc($pengajuan['nama_kost']) ?></h1>
             <p>

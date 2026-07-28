@@ -9,7 +9,8 @@
     </div>
     
     <div class="detail-header">
-        <img src="<?= base_url('uploads/kost/'.$kost['foto_kost']) ?>" class="detail-photo">
+        <?php $heroFoto = !empty($kost['galeri'][0]['nama_file']) ? $kost['galeri'][0]['nama_file'] : 'default-kost.jpg'; ?>
+        <img src="<?= base_url('uploads/kost/'. $heroFoto) ?>" class="detail-photo">
         <div class="detail-info">
             <h1><?= esc($kost['nama_kost']) ?></h1>
             <p>
@@ -19,6 +20,22 @@
             <span class="badge"><?= esc($kost['type_kost']) ?></span>
         </div>
     </div>
+
+    <?php if (!empty($kost['galeri'])): ?>
+    <div class="form-card" style="margin-bottom: 20px;">
+        <h2>
+            <i class="ti ti-photo"></i>
+            Galeri Foto Kost
+        </h2>
+        <div class="galeri-grid">
+            <?php foreach ($kost['galeri'] as $foto): ?>
+                <div class="galeri-item">
+                    <img src="<?= base_url('uploads/kost/' . $foto['nama_file']) ?>" alt="Foto Kost" loading="lazy">
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
     
     <div class="detail-grid">
         <div class="form-card">
@@ -40,12 +57,12 @@
                     <td><?= esc($kost['total_kamar']) ?> kamar (<?= esc($kost['kamar_terisi']) ?> terisi)</td>
                 </tr>
                 <tr>
-                    <td>Latitude</td>
-                    <td><?= $kost['latitude'] ?></td>
-                </tr>
-                <tr>
-                    <td>Longitude</td>
-                    <td><?= $kost['longitude'] ?></td>
+                    <td>Lokasi di Maps</td>
+                    <td>
+                        <a href="https://www.google.com/maps?q=<?= $kost['latitude'] ?>,<?= $kost['longitude'] ?>" target="_blank" class="btn-maps">
+                            <i class="ti ti-map"></i> Buka di Google Maps
+                        </a>
+                    </td>
                 </tr>
             </table>
         </div>

@@ -29,6 +29,7 @@ class KostModel extends Model
         $builder = $this->select("
             kost.*,
             users.nama AS nama_pemilik,
+            galeri_kost.nama_file AS foto_utama,
             COUNT(DISTINCT CASE
                 WHEN kamar.status_ketersediaan = 'Tersedia'
                 THEN kamar.id_kamar
@@ -50,6 +51,7 @@ class KostModel extends Model
         $builder->join('pemilik_kost', 'pemilik_kost.id_pemilik = kost.id_pemilik');
         $builder->join('users', 'users.id_user = pemilik_kost.id_user');
         $builder->join('kamar', 'kamar.id_kost = kost.id_kost', 'left');
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'detail_fasilitas_kost',
@@ -87,6 +89,17 @@ class KostModel extends Model
         $builder->groupBy('kost.id_kost');
 
         return $builder->paginate($perPage);
+    }
+
+    public function getKostById($id)
+    {
+        $kost = $this->db->table('kost')
+            ->select('kost.*, galeri_kost.nama_file AS foto_utama')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
+            ->where('kost.id_kost', $id)
+            ->get()
+            ->getRowArray();
+        return $kost;
     }
 
     public function getDetailKost($id)
@@ -145,6 +158,7 @@ class KostModel extends Model
         $builder = $this->select("
             kost.*,
             users.nama AS nama_pemilik,
+            galeri_kost.nama_file AS foto_utama,
             COUNT(DISTINCT CASE
                 WHEN kamar.status_ketersediaan = 'Tersedia'
                 THEN kamar.id_kamar
@@ -166,6 +180,7 @@ class KostModel extends Model
         $builder->join('pemilik_kost', 'pemilik_kost.id_pemilik = kost.id_pemilik');
         $builder->join('users', 'users.id_user = pemilik_kost.id_user');
         $builder->join('kamar', 'kamar.id_kost = kost.id_kost', 'left');
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'detail_fasilitas_kost',

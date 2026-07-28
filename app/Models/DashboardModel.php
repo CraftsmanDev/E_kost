@@ -134,7 +134,7 @@ class DashboardModel extends Model
                 kost.lokasi_kost,
                 kost.latitude,
                 kost.longitude,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kost.type_kost,
                 MIN(kamar.harga_sewa) as harga,
                 COUNT(DISTINCT kamar.id_kamar) as total_kamar,
@@ -142,10 +142,11 @@ class DashboardModel extends Model
                 GROUP_CONCAT(DISTINCT fasilitas_kost.nama_fasilitas SEPARATOR ', ') as fasilitas
             ")
             ->join('kamar', 'kamar.id_kost=kost.id_kost', 'left')
+            ->join('galeri_kost', 'galeri_kost.id_kost=kost.id_kost AND galeri_kost.urutan=0', 'left')
             ->join('detail_fasilitas_kost', 'detail_fasilitas_kost.id_kost=kost.id_kost', 'left')
             ->join('fasilitas_kost', 'fasilitas_kost.id_fasilitas_kost=detail_fasilitas_kost.id_fasilitas_kost', 'left')
-            ->where('kost.foto_kost IS NOT NULL')
-            ->where('kost.foto_kost !=', '')
+            ->where('galeri_kost.nama_file IS NOT NULL')
+            ->where('galeri_kost.nama_file !=', '')
             ->groupBy('kost.id_kost')
             ->limit($limit)
             ->get()
@@ -162,7 +163,7 @@ class DashboardModel extends Model
                 kost.lokasi_kost,
                 kost.latitude,
                 kost.longitude,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 kost.type_kost,
                 MIN(kamar.harga_sewa) as harga,
                 COUNT(DISTINCT kamar.id_kamar) as total_kamar,
@@ -170,6 +171,7 @@ class DashboardModel extends Model
                 GROUP_CONCAT(DISTINCT fasilitas_kost.nama_fasilitas SEPARATOR ', ') as fasilitas
             ")
             ->join('kamar', 'kamar.id_kost=kost.id_kost', 'left')
+            ->join('galeri_kost', 'galeri_kost.id_kost=kost.id_kost AND galeri_kost.urutan=0', 'left')
             ->join('detail_fasilitas_kost', 'detail_fasilitas_kost.id_kost=kost.id_kost', 'left')
             ->join('fasilitas_kost', 'fasilitas_kost.id_fasilitas_kost=detail_fasilitas_kost.id_fasilitas_kost', 'left')
             ->groupBy('kost.id_kost');
@@ -238,7 +240,7 @@ class DashboardModel extends Model
             kost.lokasi_kost,
             kost.latitude,
             kost.longitude,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kost.type_kost,
             MIN(kamar.harga_sewa) as harga,
             COUNT(DISTINCT kamar.id_kamar) as total_kamar,
@@ -255,6 +257,7 @@ class DashboardModel extends Model
             ) AS distance
         ")
             ->join('kamar', 'kamar.id_kost = kost.id_kost', 'left')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('detail_fasilitas_kost', 'detail_fasilitas_kost.id_kost = kost.id_kost', 'left')
             ->join('fasilitas_kost', 'fasilitas_kost.id_fasilitas_kost = detail_fasilitas_kost.id_fasilitas_kost', 'left')
             ->groupBy('kost.id_kost');

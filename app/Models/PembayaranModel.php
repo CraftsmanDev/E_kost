@@ -34,7 +34,7 @@ class PembayaranModel extends Model
         kost.alamat_kost,
         kost.lokasi_kost,
         kost.type_kost,
-        kost.foto_kost,
+        galeri_kost.nama_file AS foto_utama,
         kamar.nomor_kamar,
         kamar.harga_sewa ");
 
@@ -42,6 +42,7 @@ class PembayaranModel extends Model
         $builder->join('konsumen', 'konsumen.id_konsumen = pemesanan.id_konsumen');
         $builder->join('users', 'users.id_user = konsumen.id_user');
         $builder->join('kost', 'kost.id_kost = pemesanan.id_kost');
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
         $builder->join('kamar', 'kamar.id_kamar = pemesanan.id_kamar');
 
         $builder->where('pemesanan.status_pemesanan', 'Disetujui');
@@ -98,7 +99,7 @@ class PembayaranModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                kost.foto_kost,
+                galeri_kost.nama_file AS foto_utama,
                 pemesanan.tanggal_pemesanan,
                 pemesanan.status_pemesanan,
                 kamar.nomor_kamar,
@@ -110,6 +111,7 @@ class PembayaranModel extends Model
             ->join('konsumen', 'konsumen.id_konsumen = pemesanan.id_konsumen', 'left')
             ->join('users', 'users.id_user = konsumen.id_user', 'left')
             ->join('kost', 'kost.id_kost = pemesanan.id_kost', 'left')
+            ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->join('kamar', 'kamar.id_kamar = pemesanan.id_kamar', 'left')
             ->join('pemilik_kost', 'pemilik_kost.id_pemilik = kost.id_pemilik', 'left')
             ->where('pembayaran.id_pembayaran', $id)

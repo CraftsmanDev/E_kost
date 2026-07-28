@@ -5,6 +5,7 @@ $role = session()->get('role');
     <thead>
         <tr>
             <th style="width: 60px;">No</th>
+            <th style="width: 80px;">Foto</th>
             <th>Kost</th>
             <th style="width: 100px;">Tipe</th>
             <th style="width: 120px;">Total Kamar</th>
@@ -22,17 +23,17 @@ $role = session()->get('role');
                     <span class="table-no"><?= $no++ ?></span>
                 </td>
                 <td>
-                    <div class="kost-cell">
-                        <img src="<?= base_url('uploads/kost/' . $kost['foto_kost']) ?>" alt="kost" class="kost-cell-img">
-                        <div class="kost-cell-content">
-                            <span class="kost-cell-name"><?= esc($kost['nama_kost']) ?></span>
-                            <span class="kost-cell-location">
-                                <i class="ti ti-map-pin"></i>
-                                <?= esc(strlen($kost['alamat_kost']) > 40
-                                ? substr($kost['alamat_kost'], 0, 40) . '...'
-                                : $kost['alamat_kost']) ?>
-                            </span>
-                        </div>
+                    <img src="<?= base_url('uploads/kost/' . (!empty($kost['foto_utama']) ? $kost['foto_utama'] : 'default-kost.jpg')) ?>" alt="foto kost" class="kost-cell-img">
+                </td>
+                <td>
+                    <div class="kost-cell-content">
+                        <span class="kost-cell-name"><?= esc($kost['nama_kost']) ?></span>
+                        <span class="kost-cell-location">
+                            <i class="ti ti-map-pin"></i>
+                            <?= esc(strlen($kost['alamat_kost']) > 40
+                            ? substr($kost['alamat_kost'], 0, 40) . '...'
+                            : $kost['alamat_kost']) ?>
+                        </span>
                     </div>
                 </td>
                 <td>
@@ -83,7 +84,7 @@ $role = session()->get('role');
             <?php endforeach; ?>
             <?php else: ?>
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     <div class="table-empty">
                         <i class="ti ti-home"></i>
                         <p>Data kost tidak ditemukan.</p>

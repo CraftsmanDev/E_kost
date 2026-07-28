@@ -21,7 +21,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa,
             kamar.status_ketersediaan,
@@ -46,6 +46,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         );
+
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'kamar',
@@ -104,7 +106,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kost.total_kamar,
             kamar.nomor_kamar,
             kamar.harga_sewa,
@@ -132,6 +134,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         )
+
+        ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
 
         ->join(
             'kamar',
@@ -197,7 +201,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa,
             kamar.status_ketersediaan,
@@ -222,6 +226,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         );
+
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'kamar',
@@ -277,7 +283,7 @@ class PenghuniModel extends Model
         kost.alamat_kost,
         kost.lokasi_kost,
         kost.type_kost,
-        kost.foto_kost,
+        galeri_kost.nama_file AS foto_utama,
         kamar.nomor_kamar,
         kamar.harga_sewa,
         kamar.status_ketersediaan,
@@ -291,6 +297,7 @@ class PenghuniModel extends Model
         $builder->join('konsumen', 'konsumen.id_konsumen = pemesanan.id_konsumen');
         $builder->join('users', 'users.id_user = konsumen.id_user');
         $builder->join('kost', 'kost.id_kost = pemesanan.id_kost');
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
         $builder->join('kamar', 'kamar.id_kamar = pemesanan.id_kamar');
         $builder->join('tipe_kamar', 'tipe_kamar.id_tipe_kamar = kamar.id_tipe_kamar', 'left');
         $builder->join('fasilitas_kamar', 'fasilitas_kamar.id_fasilitas_kamar = kamar.id_fasilitas_kamar', 'left');
@@ -327,7 +334,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa,
             kamar.status_ketersediaan,
@@ -352,6 +359,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         );
+
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'kamar',
@@ -407,7 +416,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa,
             kamar.status_ketersediaan,
@@ -432,6 +441,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         );
+
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'kamar',
@@ -487,7 +498,7 @@ class PenghuniModel extends Model
             kost.alamat_kost,
             kost.lokasi_kost,
             kost.type_kost,
-            kost.foto_kost,
+            galeri_kost.nama_file AS foto_utama,
             kamar.nomor_kamar,
             kamar.harga_sewa,
             kamar.status_ketersediaan,
@@ -512,6 +523,8 @@ class PenghuniModel extends Model
             'kost',
             'kost.id_kost = pemesanan.id_kost'
         );
+
+        $builder->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left');
 
         $builder->join(
             'kamar',
