@@ -270,75 +270,39 @@ class KostController extends BaseController
                 'type_kost'   => $this->request->getPost('type_kost'),
                 'total_kamar' => $this->request->getPost('total_kamar')
             ];
-
-            // Handle deleted photos
-            $hapusFoto = $this->request->getPost('hapus_foto');
-            if (!empty($hapusFoto)) {
-                foreach ($hapusFoto as $namaFile) {
-                    $path = FCPATH . 'uploads/kost/' . $namaFile;
-                    if ($namaFile != '' && $namaFile != 'default-kost.jpg' && file_exists($path)) {
-                        @unlink($path);
-                    }
-                    $this->galeri_kost
-                        ->where('id_kost', $id)
-                        ->where('nama_file', $namaFile)
-                        ->delete();
+            $file = $this->request->getFile('foto_kost');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                $namaFoto = $file->getRandomName();
+                $file->move(
+                    FCPATH.'uploads/kost/',
+                    $namaFoto
+                );
+                $data['foto_kost'] = $namaFoto;
+                if (
+                    $kost['foto_kost'] != '' &&
+                    $kost['foto_kost'] != 'default-kost.jpg' &&
+                    file_exists(FCPATH.'uploads/kost/'.$kost['foto_kost'])
+                ) {
+                    unlink(
+                        FCPATH.'uploads/kost/'.$kost['foto_kost']
+                    );
                 }
             }
-
-            // Handle new photos
-            $files = $this->request->getFileMultiple('foto_kost');
-            if (!empty($files)) {
-                foreach ($files as $file) {
-                    if ($file->isValid() && !$file->hasMoved()) {
-                        $ext = $file->getExtension();
-                        if (!in_array(strtolower($ext), ['jpg', 'jpeg', 'png'])) {
-                            continue;
-                        }
-                        if ($file->getSize() > 2 * 1024 * 1024) {
-                            continue;
-                        }
-                        $randomName = $file->getRandomName();
-                        $file->move(FCPATH . 'uploads/kost/', $randomName);
-                        $uploadedFiles[] = $randomName;
-                    }
-                }
-            }
-
-            // Get remaining gallery and insert new photos
-            $remainingGaleri = $this->galeri_kost
-                ->where('id_kost', $id)
-                ->orderBy('urutan', 'ASC')
-                ->findAll();
-
-            $nextUrutan = count($remainingGaleri);
+            $this->kost->update($id, $data);
             if (!empty($uploadedFiles)) {
-                foreach ($uploadedFiles as $namaFile) {
+                $lastUrutan = $this->galeri_kost
+                    ->where('id_kost', $id)
+                    ->selectMax('urutan')
+                    ->first();
+                $urutan = ($lastUrutan['urutan'] ?? -1) + 1;
+                foreach ($uploadedFiles as $fileName) {
                     $this->galeri_kost->insert([
                         'id_kost'   => $id,
-                        'nama_file' => $namaFile,
-                        'urutan'    => $nextUrutan
+                        'nama_file' => $fileName,
+                        'urutan'    => $urutan++
                     ]);
-                    $nextUrutan++;
                 }
             }
-
-            // Re-fetch all gallery and re-number urutan, set main foto
-            $allGaleri = $this->galeri_kost
-                ->where('id_kost', $id)
-                ->orderBy('urutan', 'ASC')
-                ->findAll();
-
-            if (!empty($allGaleri)) {
-                foreach ($allGaleri as $i => $gal) {
-                    $this->galeri_kost->update($gal['id_foto'], ['urutan' => $i]);
-                }
-                $data['foto_kost'] = $allGaleri[0]['nama_file'];
-            } else {
-                $data['foto_kost'] = 'default-kost.jpg';
-            }
-
-            $this->kost->update($id, $data);
             $db->table('detail_fasilitas_kost')
                 ->where('id_kost', $id)
                 ->delete();
