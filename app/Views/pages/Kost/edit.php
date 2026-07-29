@@ -250,7 +250,6 @@ foreach ($fasilitas as $item): ?>
                     <?php endif; ?>
                 </div>
                 <div id="hapusFotoContainer"></div>
-                <div class="foto-grid" id="fotoGrid"></div>
             </div>
             <div class="form-card mt-4">
                 <h2>
@@ -343,23 +342,16 @@ document.addEventListener("DOMContentLoaded", function () {
 // ── Multi Foto Upload ──
 const inputFoto = document.getElementById("foto");
 const fotoGrid  = document.getElementById("fotoGrid");
-<<<<<<< HEAD
 const hapusContainer = document.getElementById("hapusFotoContainer");
 
 inputFoto.addEventListener("change", function () {
-=======
-inputFoto.addEventListener("change", function () {
-    fotoGrid.innerHTML = "";
->>>>>>> aa2cecc (sql)
     const files = Array.from(this.files);
     if (files.length > 10) {
         alert("Maksimal 10 foto!");
         this.value = "";
         return;
     }
-<<<<<<< HEAD
 
-    // Remove previous new-file previews
     document.querySelectorAll(".foto-card-new").forEach(function (el) { el.remove(); });
 
     const existingCount = document.querySelectorAll(".foto-card-existing").length;
@@ -370,9 +362,6 @@ inputFoto.addEventListener("change", function () {
     }
 
     files.forEach(function (file) {
-=======
-    files.forEach(function (file, index) {
->>>>>>> aa2cecc (sql)
         if (file.size > 2 * 1024 * 1024) {
             alert(file.name + " melebihi 2 MB, dilewati.");
             return;
@@ -382,7 +371,6 @@ inputFoto.addEventListener("change", function () {
             alert(file.name + " bukan format JPG/PNG, dilewati.");
             return;
         }
-<<<<<<< HEAD
 
         const card = document.createElement("div");
         card.className = "foto-card foto-card-new";
@@ -409,7 +397,6 @@ inputFoto.addEventListener("change", function () {
     });
 });
 
-// Handle delete for existing & new photos
 fotoGrid.addEventListener("click", function (e) {
     const delBtn = e.target.closest(".foto-delete");
     if (!delBtn) return;
@@ -425,33 +412,12 @@ fotoGrid.addEventListener("click", function (e) {
     }
     card.remove();
 
-    // Re-number badges
     const cards = fotoGrid.querySelectorAll(".foto-card-existing");
     cards.forEach(function (c, i) {
         const badge = c.querySelector(".foto-badge");
         if (badge) badge.textContent = i === 0 ? "Utama" : "#" + (i + 1);
         c.classList.toggle("foto-utama", i === 0);
     });
-=======
-        const card = document.createElement("div");
-        card.className = "foto-card";
-        if (index === 0) {
-            card.classList.add("foto-utama");
-        }
-        const img = document.createElement("img");
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-        const badge = document.createElement("span");
-        badge.className = "foto-badge";
-        badge.textContent = index === 0 ? "Utama" : "#" + (index + 1);
-        card.appendChild(img);
-        card.appendChild(badge);
-        fotoGrid.appendChild(card);
-    });
->>>>>>> aa2cecc (sql)
 });
 
 document.getElementById('toggleFasilitasForm').addEventListener('click', function() {

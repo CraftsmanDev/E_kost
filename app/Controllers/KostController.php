@@ -7,7 +7,6 @@ use App\Models\KostModel;
 use App\Models\PemilikKostModel;
 use App\Models\FasilitasKostModel;
 use App\Models\AturanKostModel;
-
 use App\Models\GaleriKostModel;
 
 class KostController extends BaseController
@@ -205,7 +204,6 @@ class KostController extends BaseController
             'title' => 'Detail Kost',
             'kost'  => $kost
         ];
-
         return view('pages/kost/detail', $data);
     }
 
@@ -270,22 +268,17 @@ class KostController extends BaseController
                 'type_kost'   => $this->request->getPost('type_kost'),
                 'total_kamar' => $this->request->getPost('total_kamar')
             ];
-            $file = $this->request->getFile('foto_kost');
-            if ($file && $file->isValid() && !$file->hasMoved()) {
-                $namaFoto = $file->getRandomName();
-                $file->move(
-                    FCPATH.'uploads/kost/',
-                    $namaFoto
-                );
-                $data['foto_kost'] = $namaFoto;
-                if (
-                    $kost['foto_kost'] != '' &&
-                    $kost['foto_kost'] != 'default-kost.jpg' &&
-                    file_exists(FCPATH.'uploads/kost/'.$kost['foto_kost'])
-                ) {
-                    unlink(
-                        FCPATH.'uploads/kost/'.$kost['foto_kost']
-                    );
+            $files = $this->request->getFileMultiple('foto_kost');
+            if ($files) {
+                foreach ($files as $file) {
+                    if ($file && $file->isValid() && !$file->hasMoved()) {
+                        $namaFoto = $file->getRandomName();
+                        $file->move(FCPATH.'uploads/kost/', $namaFoto);
+                        if (empty($data['foto_kost'])) {
+                            $data['foto_kost'] = $namaFoto;
+                        }
+                        $uploadedFiles[] = $namaFoto;
+                    }
                 }
             }
             $this->kost->update($id, $data);
@@ -301,6 +294,18 @@ class KostController extends BaseController
                         'nama_file' => $fileName,
                         'urutan'    => $urutan++
                     ]);
+                }
+            }
+            $hapusFoto = $this->request->getPost('hapus_foto');
+            if (!empty($hapusFoto)) {
+                foreach ($hapusFoto as $namaFile) {
+                    $this->galeri_kost
+                        ->where('id_kost', $id)
+                        ->where('nama_file', $namaFile)
+                        ->delete();
+                    if (file_exists(FCPATH.'uploads/kost/'.$namaFile)) {
+                        unlink(FCPATH.'uploads/kost/'.$namaFile);
+                    }
                 }
             }
             $db->table('detail_fasilitas_kost')

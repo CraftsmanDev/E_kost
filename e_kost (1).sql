@@ -239,7 +239,12 @@ INSERT INTO `galeri_kost` (`id_foto`, `id_kost`, `nama_file`, `urutan`, `created
 (69, 22, '1785244819_ee49bc5b274ac448b4d6.jpg', 2, '2026-07-28 20:20:19'),
 (70, 22, '1785244819_13417288169aa94af771.jpg', 3, '2026-07-28 20:20:19'),
 (71, 22, '1785244819_5c229c2f77a83c565cbc.jpg', 4, '2026-07-28 20:20:19'),
-(72, 22, '1785244819_56870fa5207220aea3ec.jpg', 5, '2026-07-28 20:20:19');
+(72, 22, '1785244819_56870fa5207220aea3ec.jpg', 5, '2026-07-28 20:20:19'),
+(73, 15, '1784548117_aaf0da6040bf5f19ae4b.jpg', 0, '2026-07-28 20:20:19'),
+(74, 16, '1784551253_86e37340aa64b483f509.jpg', 0, '2026-07-28 20:20:19'),
+(75, 17, 'default.png', 0, '2026-07-28 20:20:19'),
+(76, 18, '1784960522_35aa71de8e267430e461.png', 0, '2026-07-28 20:20:19'),
+(77, 19, '1784961484_12e0998ca0af1787ea08.jpg', 0, '2026-07-28 20:20:19');
 
 -- --------------------------------------------------------
 
@@ -317,12 +322,12 @@ CREATE TABLE `kost` (
 
 INSERT INTO `kost` (`id_kost`, `id_pemilik`, `nama_kost`, `alamat_kost`, `lokasi_kost`, `latitude`, `longitude`, `foto_kost`, `type_kost`, `total_kamar`) VALUES
 (15, 1, 'Kost Reagan', 'mimbaan barat, mimbaan panji situbondo', 'Mimbaan, Panji, Situbondo', -7.77411200, 114.14210500, '1784548117_aaf0da6040bf5f19ae4b.jpg', 'PUTRA', 10),
-(16, 2, 'Mr Kost', 'jln argopuro No RT 03 RW O3 Mimba\'an barat, mimbaan kabupaten sitobondo jawa timur', 'jln argopuro No RT 03 RW O3 Mimba\'an barat, mimbaan kabupaten sitobondo jawa timur', -7.70457600, 114.01419100, '1784551253_86e37340aa64b483f509.jpg', 'CAMPUR', 15),
-(17, 3, 'kost argopuro', 'jl.argopuro no.88, mimbaan barat,mimbaan, kec panji, kab situbondo, jawa timur 68323', 'mimbaan barat, kab situbondo, jawa timur', -7.70385600, 114.01464800, 'default.png', 'PUTRI', 10),
-(18, 4, 'sumber barokah II', 'jl semeru no 19 mimbaan tengah, mimbaan, kec panji, kab situbondo, jawa timur 68323', 'mimbaan, kab situbondo, jawa timur ', -7.70626100, 114.01800500, '1784960522_35aa71de8e267430e461.png', 'PUTRI', 14),
-(19, 5, 'kost mas ghofur ', 'jl argopuro gang v no 27 mimbaan tengah, mimbaan kec situbondo kab situbondo, jawa timur 68322', 'mimbaan tengah, situbondo, jawa timur ', -7.70686140, 114.01520460, '1784961484_12e0998ca0af1787ea08.jpg', 'PUTRA', 13),
-(20, 6, 'kost Buk Warto', 'jl argopuro no 102 mimbaan tengah kelurahan mimbaan kec panji kab situbondo jawa timur 68322', 'mimbaan tengah kab situbondo jawa timur ', -7.71075540, 114.01518860, '1785237237_1732714e8fdc66ab2236.jpg', 'CAMPUR', 12),
-(21, 7, 'kost putra aditya', 'jl argopuro, mimbaan barat, kelurahan mimbaan, kec panji, kabupaten situbondo jawa timur68323.', 'mimbaan barat, kec panji,  situbondo.', -7.70600000, 114.01240000, '1785240953_6f636605ee5c1e5f24f3.jpg', 'PUTRA', 12),
+(16, 2, 'Mr Kost', 'jln argopuro No RT 03 RW 03 Mimba\'an barat, mimbaan kabupaten situbondo jawa timur', 'jln argopuro No RT 03 RW 03 Mimba\'an barat, mimbaan kabupaten situbondo jawa timur', -7.70457600, 114.01419100, '1784551253_86e37340aa64b483f509.jpg', 'CAMPUR', 15),
+(17, 3, 'kost argopuro', 'jl.argopuro no.88, mimbaan barat, mimbaan, kec panji, kab situbondo, jawa timur 68323', 'mimbaan barat, kab situbondo, jawa timur', -7.70385600, 114.01464800, 'default.png', 'PUTRI', 10),
+(18, 4, 'sumber barokah II', 'jl semeru no 19 mimbaan tengah, mimbaan, kec panji, kab situbondo, jawa timur 68323', 'mimbaan, kab situbondo, jawa timur', -7.70626100, 114.01800500, '1784960522_35aa71de8e267430e461.png', 'PUTRI', 14),
+(19, 5, 'kost mas ghofur', 'jl argopuro gang v no 27 mimbaan tengah, mimbaan kec situbondo kab situbondo, jawa timur 68322', 'mimbaan tengah, situbondo, jawa timur', -7.70686140, 114.01520460, '1784961484_12e0998ca0af1787ea08.jpg', 'PUTRA', 13),
+(20, 6, 'kost Buk Warto', 'jl argopuro no 102 mimbaan tengah kelurahan mimbaan kec panji kab situbondo jawa timur 68322', 'mimbaan tengah kab situbondo jawa timur', -7.71075540, 114.01518860, '1785237237_1732714e8fdc66ab2236.jpg', 'CAMPUR', 12),
+(21, 7, 'kost putra aditya', 'jl argopuro, mimbaan barat, kelurahan mimbaan, kec panji, kabupaten situbondo jawa timur 68323', 'mimbaan barat, kec panji, situbondo', -7.70600000, 114.01240000, '1785240953_6f636605ee5c1e5f24f3.jpg', 'PUTRA', 12),
 (22, 8, 'kost warung maju', 'jl semeru no 156, mimbaan tengah, mimbaan, kec panji kab situbondo, jawa timur 68322', 'mimbaan tengah, kab situbondo, jawa timur', -7.77428500, 114.14204400, '1785244819_3dd6fdfadea56744437a.jpg', 'CAMPUR', 17);
 
 -- --------------------------------------------------------
@@ -405,7 +410,7 @@ CREATE TABLE `pemilik_kost` (
 
 INSERT INTO `pemilik_kost` (`id_pemilik`, `id_user`, `alamat`, `nama_bank`, `nomor_rekening`) VALUES
 (1, 2, 'mimbaan barat kabupaten situbondo jawa timur', 'BRI', '009001029043533'),
-(2, 3, 'jln argopuro No RT 03 RW O3 Mimba\'an barat, mimbaan kabupaten sitobondo jawa timur', 'Seabank', '901241403046'),
+(2, 3, 'jln argopuro No RT 03 RW 03 Mimba\'an barat, mimbaan kabupaten situbondo jawa timur', 'Seabank', '901241403046'),
 (3, 4, 'jl argopuro, No.88 Mimbaan Barat, Mimbaan keb Panji, mimbaan, Kabupaten Situbondo, Jawa Timur', 'BCA', '1210721106'),
 (4, 5, 'jl semeru no 19 mimbaan tengah, mimbaan, kec panji, kab situbondo, jawa timur 68323', 'BRI', '009001-093992502'),
 (5, 6, 'jl argopuro gang v no 27 mimbaan tengah, mimbaan kec situbondo kab situbondo, jawa timur 68322', 'BCA', '1210695091'),
@@ -678,7 +683,7 @@ ALTER TABLE `fasilitas_kost`
 -- AUTO_INCREMENT untuk tabel `galeri_kost`
 --
 ALTER TABLE `galeri_kost`
-  MODIFY `id_foto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `id_foto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT untuk tabel `kamar`

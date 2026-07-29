@@ -57,7 +57,7 @@ class PemesananModel extends Model
                 kost.alamat_kost,
                 kost.lokasi_kost,
                 kost.type_kost,
-                galeri_kost.nama_file AS foto_utama,
+                COALESCE(galeri_kost.nama_file, kost.foto_kost) AS foto_utama,
                 kost.total_kamar,
                 users.nama,
                 users.no_hp,

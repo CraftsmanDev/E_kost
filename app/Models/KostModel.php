@@ -29,7 +29,7 @@ class KostModel extends Model
         $builder = $this->select("
             kost.*,
             users.nama AS nama_pemilik,
-            galeri_kost.nama_file AS foto_utama,
+            COALESCE(galeri_kost.nama_file, kost.foto_kost) AS foto_utama,
             COUNT(DISTINCT CASE
                 WHEN kamar.status_ketersediaan = 'Tersedia'
                 THEN kamar.id_kamar
@@ -94,7 +94,7 @@ class KostModel extends Model
     public function getKostById($id)
     {
         $kost = $this->db->table('kost')
-            ->select('kost.*, galeri_kost.nama_file AS foto_utama')
+            ->select('kost.*, COALESCE(galeri_kost.nama_file, kost.foto_kost) AS foto_utama')
             ->join('galeri_kost', 'galeri_kost.id_kost = kost.id_kost AND galeri_kost.urutan = 0', 'left')
             ->where('kost.id_kost', $id)
             ->get()
@@ -158,7 +158,7 @@ class KostModel extends Model
         $builder = $this->select("
             kost.*,
             users.nama AS nama_pemilik,
-            galeri_kost.nama_file AS foto_utama,
+            COALESCE(galeri_kost.nama_file, kost.foto_kost) AS foto_utama,
             COUNT(DISTINCT CASE
                 WHEN kamar.status_ketersediaan = 'Tersedia'
                 THEN kamar.id_kamar
