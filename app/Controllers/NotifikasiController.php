@@ -171,11 +171,9 @@ class NotifikasiController extends BaseController
             ]);
         }
     }
-
     public function delete($id)
     {
         $result = $this->notifikasiModel->deleteNotifikasi($id);
-
         if ($result) {
             return $this->response->setJSON([
                 'status' => 'success',
