@@ -236,7 +236,6 @@ foreach ($fasilitas as $item): ?>
                         </p>
                     </label>
                 </div>
-<<<<<<< HEAD
                 <div class="foto-grid" id="fotoGrid">
                     <?php if (!empty($kost['galeri'])): ?>
                         <?php foreach ($kost['galeri'] as $index => $foto): ?>
@@ -251,9 +250,7 @@ foreach ($fasilitas as $item): ?>
                     <?php endif; ?>
                 </div>
                 <div id="hapusFotoContainer"></div>
-=======
                 <div class="foto-grid" id="fotoGrid"></div>
->>>>>>> aa2cecc (sql)
             </div>
             <div class="form-card mt-4">
                 <h2>
