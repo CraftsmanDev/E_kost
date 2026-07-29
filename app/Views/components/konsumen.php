@@ -66,9 +66,7 @@
                 <?php foreach ($kostPopuler as $kost): ?>
                 <div class="kost-card" data-id="<?= $kost['id_kost'] ?>">
                     <div class="kost-img">
-                        <?php if (!empty($kost['foto_utama'])): ?>
-                            <img src="<?= base_url('uploads/kost/'.$kost['foto_utama']) ?>">
-                        <?php endif; ?>
+                        <img src="<?= base_url('uploads/kost/'.(!empty($kost['foto_utama']) ? $kost['foto_utama'] : 'default-kost.jpg')) ?>">
                     </div>
                     <div class="kost-info">
                         <div class="kost-meta">
@@ -564,7 +562,7 @@
                 html += `
                 <div class="kost-card" data-id="${kost.id_kost}">
                     <div class="kost-img">
-                        ${kost.foto_utama ? `<img src="${baseUrl('uploads/kost/' + kost.foto_utama)}">` : ''}
+                        <img src="${baseUrl('uploads/kost/' + (kost.foto_utama || 'default-kost.jpg'))}">
                         <button class="btn-fav">
                             <i class="ti ti-heart"></i>
                         </button>
